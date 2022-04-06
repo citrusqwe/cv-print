@@ -8,9 +8,10 @@ import {
   Title,
   TextWithRange,
 } from './components';
+import { ReactComponent as PlusIcon } from './assets/plus.svg';
+import { ReactComponent as MinusIcon } from './assets/minus.svg';
 import { ReactComponent as MailIcon } from './assets/mail.svg';
 import { ReactComponent as PhoneIcon } from './assets/phone.svg';
-import { ReactComponent as PlusIcon } from './assets/plus.svg';
 import { ReactComponent as GithubIcon } from './assets/github.svg';
 import { ReactComponent as TelegramIcon } from './assets/telegram.svg';
 import { ReactComponent as AddressIcon } from './assets/address.svg';
@@ -46,6 +47,7 @@ const Content = styled.div`
 `;
 
 const PlusBtn = styled.button`
+  // display: block;
   background-color: transparent;
   padding: 5px;
   border: none;
@@ -54,6 +56,12 @@ const PlusBtn = styled.button`
   svg {
     width: 14px;
     hegiht: 14px;
+  }
+
+  transition: background-color 0.3s;
+  &:hover {
+    transition: background-color 0.3s;
+    background-color: rgb(233, 233, 233);
   }
 `;
 
@@ -81,6 +89,31 @@ function App() {
   const handlePrint = useReactToPrint({
     content: () => cvRef.current,
   });
+
+  const onAdd = (type: string) => {
+    switch (type) {
+      case 'skill':
+        setSkillsArrayLength(skillsArrayLength + 1);
+        break;
+      case 'work':
+        setWorkArrayLength(workArrayLength + 1);
+        break;
+      case 'block':
+        setBlocksArrayLength(blocksArrayLength + 1);
+    }
+  };
+  const onDelete = (type: string) => {
+    switch (type) {
+      case 'skill':
+        if (skillsArrayLength > 0) setSkillsArrayLength(skillsArrayLength - 1);
+        break;
+      case 'work':
+        if (workArrayLength > 0) setWorkArrayLength(workArrayLength - 1);
+        break;
+      case 'block':
+        if (workArrayLength > 0) setBlocksArrayLength(blocksArrayLength - 1);
+    }
+  };
 
   return (
     <div className="ui-wrapper">
@@ -157,26 +190,38 @@ function App() {
               <Text>University</Text>
             </Row>
             <Row isBlock>
-              <Title style={{ marginTop: '2rem' }} size="2">
+              <Title
+                style={{
+                  marginTop: '2rem',
+                }}
+                size="2"
+                withPlus
+                withMinus
+                onAdd={onAdd}
+                onDelete={onDelete}
+                type="work"
+              >
                 Work experience
-                <PlusBtn
-                  onClick={() => setWorkArrayLength(workArrayLength + 1)}
-                >
-                  <PlusIcon />
-                </PlusBtn>
               </Title>
               {new Array(workArrayLength).fill(null).map((_, i) => (
-                <Text key={i}>{`${i + 1}. Work here`}</Text>
+                <Text style={{ marginBottom: '5px' }} key={i}>{`${
+                  i + 1
+                }. Work here`}</Text>
               ))}
             </Row>
             <Row isBlock>
-              <Title style={{ marginTop: '2rem' }} size="2">
+              <Title
+                style={{
+                  marginTop: '2rem',
+                }}
+                size="2"
+                withPlus
+                withMinus
+                onAdd={onAdd}
+                onDelete={onDelete}
+                type="skill"
+              >
                 Skills
-                <PlusBtn
-                  onClick={() => setSkillsArrayLength(skillsArrayLength + 1)}
-                >
-                  <PlusIcon />
-                </PlusBtn>
               </Title>
               {new Array(skillsArrayLength).fill(null).map((_, i) => (
                 <TextWithRange key={i} />
@@ -184,8 +229,10 @@ function App() {
             </Row>
 
             {new Array(blocksArrayLength).fill(null).map((_, i) => (
-              <Row isBlock>
-                <Title size="2">New Title</Title>
+              <Row key={i} isBlock>
+                <Title size="2" withMinus onDelete={onDelete} type="block">
+                  New Title
+                </Title>
                 <Text>New Text</Text>
               </Row>
             ))}
